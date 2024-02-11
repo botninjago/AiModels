@@ -53,6 +53,7 @@ def doSteps() {
     }
 
     withCredentials([usernamePassword(credentialsId: 'docker-hub-user', usernameVariable: 'hub_user', passwordVariable: 'hub_password')]) {
+        docker login -u $hub_user -p $hub_password
         clean_up_docker()
     }
 }
