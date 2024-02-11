@@ -13,6 +13,26 @@ This class provides utilities for converting Groovy objects to JSON format.
 import org.apache.commons.io.FilenameUtils  
 import groovy.json.JsonOutput
 
+def show_node_info() {
+    sh """
+        echo "NODE_NAME = \$NODE_NAME" || true
+        lsb_release -sd || true
+        uname -r || true
+        cat /sys/module/amdgpu/version || true
+        ls /opt/ -la || true
+    """
+}
+
+def doSteps() {
+    def targetNode = "dlmodels"
+    // Record the value of targetNode
+    echo "The value of targetNode is: ${targetNode}"
+    node(targetNode) {
+        //show node information
+        show_node_info()
+    }
+}
+
 pipeline {
     agent any
     stages {
@@ -53,6 +73,13 @@ pipeline {
                     echo "JSON data: ${jsonString}"            
                 }
 
+            }
+        }
+        stage('Models') {
+            steps {
+                script {
+                    doSteps()
+                }
             }
         }
     }
