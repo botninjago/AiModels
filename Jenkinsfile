@@ -38,19 +38,21 @@ pipeline {
             }
         }
         stage('Test') {
-            node {
-                def data = [
-                        name: 'John',
-                        age: 30,
-                        city: 'New York'
-                    ]
-
-                // Convert Groovy object to JSON string
-                def jsonString = JsonOutput.toJson(data)
-            }
             steps {
-                // Print JSON string
-                echo "JSON data: ${jsonString}"
+                script{
+                    def data = [
+                            name: 'John',
+                            age: 30,
+                            city: 'New York'
+                        ]
+
+                    // Convert Groovy object to JSON string
+                    def jsonString = JsonOutput.toJson(data)        
+                    
+                    // Print JSON string
+                    echo "JSON data: ${jsonString}"            
+                }
+
             }
         }
     }
