@@ -23,52 +23,80 @@ def show_node_info() {
     """
 }
 
+def clean_up_docker() {
+    sh 'docker ps -a || true' // "|| true" suppresses errors
+    sh 'docker kill $(docker ps -q) || true'
+    sh 'docker rm $(docker ps -a -q) || true'
+    sh 'docker rmi $(docker images -q) || true'
+    sh 'docker system prune -af --volumes || true'
+}
+
+def clean_up_docker_container() {
+    sh 'docker ps -a || true' // "|| true" suppresses errors
+    sh 'docker kill $(docker ps -q) || true'
+}
+
 def doSteps() {
+    //show node information
     show_node_info()
+
+    // Clean before build
+    cleanWs()
+
+    // We need to explicitly checkout from SCM here
+    checkout scm    
+
+    withPythonEnv('python3') {
+        // install requirements
+        sh 'python3 -m pip install --upgrade pip || true'
+        sh 'python3 -m pip install -r requirements.txt || true'
+    }
+
+    clean_up_docker()
 }
 
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        stage('Build') {
-            steps {
-                echo 'Hello world!' 
-                sh 'pwd'
-                sh 'ls'
-                sh 'docker ps -a || true'
-                script {
-                    withPythonEnv('python3') {
-                        sh 'python3 --version'
-                        sh 'python3 -m pip install --upgrade pip'
-                        sh 'pip install -r requirements.txt'
-                        sh 'pip freeze'
-                    }
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                script{
-                    def data = [
-                            name: 'John',
-                            age: 30,
-                            city: 'New York'
-                        ]
+        // stage('Checkout') {
+        //     steps {
+        //         checkout scm
+        //     }
+        // }
+        // stage('Build') {
+        //     steps {
+        //         echo 'Hello world!' 
+        //         sh 'pwd'
+        //         sh 'ls'
+        //         sh 'docker ps -a || true'
+        //         script {
+        //             withPythonEnv('python3') {
+        //                 sh 'python3 --version'
+        //                 sh 'python3 -m pip install --upgrade pip'
+        //                 sh 'pip install -r requirements.txt'
+        //                 sh 'pip freeze'
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Test') {
+        //     steps {
+        //         script{
+        //             def data = [
+        //                     name: 'John',
+        //                     age: 30,
+        //                     city: 'New York'
+        //                 ]
 
-                    // Convert Groovy object to JSON string
-                    def jsonString = JsonOutput.toJson(data)        
+        //             // Convert Groovy object to JSON string
+        //             def jsonString = JsonOutput.toJson(data)        
                     
-                    // Print JSON string
-                    echo "JSON data: ${jsonString}"            
-                }
+        //             // Print JSON string
+        //             echo "JSON data: ${jsonString}"            
+        //         }
 
-            }
-        }
+        //     }
+        // }
         stage('Models') {
             steps {
                 script {
