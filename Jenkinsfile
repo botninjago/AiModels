@@ -13,12 +13,6 @@ This class provides utilities for converting Groovy objects to JSON format.
 import org.apache.commons.io.FilenameUtils  
 import groovy.json.JsonOutput
 
-def data = [
-        name: 'John',
-        age: 30,
-        city: 'New York'
-    ]
-
 pipeline {
     agent any
     stages {
@@ -45,6 +39,12 @@ pipeline {
         }
         stage('Test') {
             steps {
+                def data = [
+                        name: 'John',
+                        age: 30,
+                        city: 'New York'
+                    ]
+
                 // Convert Groovy object to JSON string
                 def jsonString = JsonOutput.toJson(data)
 
