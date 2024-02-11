@@ -52,7 +52,9 @@ def doSteps() {
         sh 'python3 -m pip install -r requirements.txt || true'
     }
 
-    clean_up_docker()
+    withCredentials([usernamePassword(credentialsId: 'docker-hub-user', usernameVariable: 'hub_user', passwordVariable: 'hub_password')]) {
+        clean_up_docker()
+    }
 }
 
 pipeline {
