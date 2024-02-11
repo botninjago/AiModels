@@ -52,10 +52,7 @@ def doSteps() {
         sh 'python3 -m pip install -r requirements.txt || true'
     }
 
-    withCredentials([usernamePassword(credentialsId: 'docker-hub-user', usernameVariable: 'hub_user', passwordVariable: 'hub_password')]) {
-        docker login -u $hub_user -p $hub_password
-        clean_up_docker()
-    }
+    clean_up_docker()
 }
 
 pipeline {
@@ -103,7 +100,10 @@ pipeline {
         stage('Models') {
             steps {
                 script {
-                    doSteps()
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-user', usernameVariable: 'hub_user', passwordVariable: 'hub_password')]) {
+                        sh 'docker login -u $hub_user -p $hub_password'
+                        doSteps()
+                    }
                 }
             }
         }
