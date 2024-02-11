@@ -24,13 +24,7 @@ def show_node_info() {
 }
 
 def doSteps() {
-    def targetNode = "dlmodels"
-    // Record the value of targetNode
-    echo "The value of targetNode is: ${targetNode}"
-    node(targetNode) {
-        //show node information
-        show_node_info()
-    }
+    show_node_info()
 }
 
 pipeline {
