@@ -74,9 +74,9 @@ pipeline {
         TUNA_DB_USER_PASSWORD = "${TUNA_DB_USER_PASSWORD}"
         TUNA_DB_NAME= 'dlm_db'
         TUNA_DB_HOSTNAME= 'localhost'
-        DLM_GITHUB_TOKEN = credentials('05e1adb8-6e6c-4958-9337-d80fc4a26ef1')
-        AMD_GITHUB_TOKEN = credentials('z1-miciadmin-github-amd-creds')
-        BOT_GITHUB_TOKEN = credentials('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')
+        // DLM_GITHUB_TOKEN = credentials('05e1adb8-6e6c-4958-9337-d80fc4a26ef1')
+        // AMD_GITHUB_TOKEN = credentials('z1-miciadmin-github-amd-creds')
+        // BOT_GITHUB_TOKEN = credentials('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')
     }
 
     parameters {
