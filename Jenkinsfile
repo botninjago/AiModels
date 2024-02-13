@@ -65,7 +65,7 @@ def doSteps() {
 }
 
 pipeline {
-    agent { label 'build-only' }
+    agent any
 
     // set main branch
     environment {
