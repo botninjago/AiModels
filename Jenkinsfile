@@ -59,8 +59,6 @@ def doSteps() {
         }
 
         clean_up_docker()
-
-        docker_pytorch_rocm()
     }
 }
 
@@ -128,7 +126,8 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker-hub-user', usernameVariable: 'hub_user', passwordVariable: 'hub_password')]) {
                         sh 'docker login -u $hub_user -p $hub_password'
-                        doSteps()
+                        docker_pytorch_rocm()
+                        // doSteps()
                     }
                 }
             }
