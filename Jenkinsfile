@@ -37,22 +37,24 @@ def clean_up_docker_container() {
 }
 
 def doSteps() {
-    //show node information
-    show_node_info()
+    node('docker-agent') {
+        //show node information
+        show_node_info()
 
-    // Clean before build
-    cleanWs()
+        // Clean before build
+        cleanWs()
 
-    // We need to explicitly checkout from SCM here
-    checkout scm    
+        // We need to explicitly checkout from SCM here
+        checkout scm    
 
-    withPythonEnv('python3') {
-        // install requirements
-        sh 'python3 -m pip install --upgrade pip || true'
-        sh 'python3 -m pip install -r requirements.txt || true'
+        withPythonEnv('python3') {
+            // install requirements
+            sh 'python3 -m pip install --upgrade pip || true'
+            sh 'python3 -m pip install -r requirements.txt || true'
+        }
+
+        clean_up_docker()
     }
-
-    clean_up_docker()
 }
 
 pipeline {
