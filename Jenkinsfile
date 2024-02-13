@@ -38,7 +38,7 @@ def clean_up_docker_container() {
 
 def docker_pytorch_rocm() {
     sh 'docker pull rocm/pytorch:latest || true'
-    sh 'docker run -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 8G rocm/pytorch:latest || true'
+    sh 'docker run --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 8G rocm/pytorch:latest || true'
 }
 
 def doSteps() {
@@ -59,6 +59,11 @@ def doSteps() {
         }
 
         clean_up_docker()
+
+        withCredentials([usernamePassword(credentialsId: 'docker-hub-user', usernameVariable: 'hub_user', passwordVariable: 'hub_password')]) {
+            sh 'docker login -u $hub_user -p $hub_password'
+            docker_pytorch_rocm()
+        }
     }
 }
 
@@ -124,11 +129,8 @@ pipeline {
         stage('Models') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-user', usernameVariable: 'hub_user', passwordVariable: 'hub_password')]) {
-                        sh 'docker login -u $hub_user -p $hub_password'
-                        docker_pytorch_rocm()
-                        // doSteps()
-                    }
+
+                    doSteps()
                 }
             }
         }
