@@ -36,6 +36,11 @@ def clean_up_docker_container() {
     sh 'docker kill $(docker ps -q) || true'
 }
 
+def docker_pytorch_rocm() {
+    sh 'docker pull rocm/pytorch:latest || true'
+    sh 'docker run -it --cap-add=SYS_PTRACE --security-opt seccomp=unconfined --device=/dev/kfd --device=/dev/dri --group-add video --ipc=host --shm-size 8G rocm/pytorch:latest || true'
+}
+
 def doSteps() {
     node('docker-agent') {
         //show node information
@@ -54,11 +59,30 @@ def doSteps() {
         }
 
         clean_up_docker()
+
+        docker_pytorch_rocm()
     }
 }
 
 pipeline {
-    agent any
+    agent { label 'build-only' }
+
+    // set main branch
+    environment {
+        MAIN_BRANCH = 'main'
+        TUNA_DB_USER_NAME = "${TUNA_DB_USER_NAME}"
+        TUNA_DB_USER_PASSWORD = "${TUNA_DB_USER_PASSWORD}"
+        TUNA_DB_NAME= 'dlm_db'
+        TUNA_DB_HOSTNAME= 'localhost'
+        DLM_GITHUB_TOKEN = credentials('05e1adb8-6e6c-4958-9337-d80fc4a26ef1')
+        AMD_GITHUB_TOKEN = credentials('z1-miciadmin-github-amd-creds')
+        BOT_GITHUB_TOKEN = credentials('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')
+    }
+
+    parameters {
+        string(name: 'pipeline', defaultValue: 'none', description: 'Specify DLM pipeline to differentiate result in DB; Not used in the actual run.')
+    }
+
     stages {
         // stage('Checkout') {
         //     steps {
